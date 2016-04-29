@@ -2,7 +2,7 @@ import time
 from slackclient import SlackClient
 import re
 
-token = "xoxb-38623745957-bkZ6QasIVeZbskwUJuvoOGwV"
+token = ""
 
 sc = SlackClient(token)
 
@@ -32,7 +32,7 @@ if sc.rtm_connect():
                     text = datum["text"]
                     if "channel" in datum and datum["channel"] == "D14JN5VNE":
                         interesting(sc, text)
-        print data
+        #print data
         time.sleep(1)
 else:
     print "Connection Failed, invalid token?"
