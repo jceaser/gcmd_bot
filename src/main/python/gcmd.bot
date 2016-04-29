@@ -1,0 +1,59 @@
+#!/usr/python
+
+import json
+import urllib
+import urllib2
+import sys
+
+token = "xoxb-38623745957-A5bGdcc7PNCVPbF2P4Awib43"
+rtmStart = "https://slack.com/api/rtm.start?token=%s&scope=client&simple_latest=true&no_unreads=true"
+chatPost = "https://slack.com/api/chat.postMessage?token=%s&channel=%s&text=%s"
+
+def first():
+    response = urllib2.urlopen(rtmStart % token)
+    jdat = response.read()
+
+    data = json.loads(jdat)
+
+    if data['ok']:
+        text = ""
+        for line in sys.stdin:
+            text = "%s%s" % (text, line)
+        
+        for c in data["channels"]:
+            if c['name'] == "sandbox":
+                print "here"
+                #response = urllib2.urlopen(chatPost % (token, c['id'], text))
+    else:
+        print "Login issue"
+
+def second():
+    '''
+    Send standard in to slack.com
+    '''
+    req = urllib2.Request(rtmStart % token)
+    resp = urllib2.urlopen(req)
+    jdat = resp.read()
+
+    data = json.loads(jdat)
+
+    if data['ok']:
+        text = ""
+        for line in sys.stdin:
+            text = "%s\\n%s" % (text, line.strip())
+        
+        for c in data["channels"]:
+            if c['name'] == "sandbox":
+                jdata2 = '{"id":1,"type":"message","channel":"%s","text": "%s"}' % (c['id'], text.strip())
+                #print jdata2
+                post_data = urllib.urlencode(json.loads(jdata2))
+                #post_data = urllib.urlencode(jdata2)   #.replace("\n", "*"))
+                #print post_data
+                req2 = urllib2.Request(chatPost % (token, c['id'], post_data))
+                resp2 = urllib2.urlopen(req2)
+                #print resp2
+    else:
+        print "Login issue"
+
+#first()
+second()
