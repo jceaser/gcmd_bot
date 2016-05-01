@@ -1,12 +1,7 @@
 import time
 from slackclient import SlackClient
 import re
-
-token = ""
-
-sc = SlackClient(token)
-
-print (sc)
+import os.path
 
 '''
 [{u'type': u'user_typing', u'user': u'U13SD9KSN', u'channel': u'D14JN5VNE'}]
@@ -16,6 +11,23 @@ print (sc)
 
 '''
 
+def stringFromFiles():
+    text = stringFromFile(".token.txt")
+    if (text is None):
+        text = stringFromFile("~/.token.txt")
+    if (text is None):
+        text = stringFromFile("~/.slack_token.txt")
+    if (text is None):
+        text = stringFromFile("/usr/local/etc/slack_token.txt")
+    return text
+
+def stringFromFile(file):
+    string = None
+    if os.path.isfile(file):
+        f = open(file,"r")
+        string = f.read()
+    return string
+
 def interesting(sc, text):
     m = re.search("(CMRQ-[\d]+)", text)
     if m is not None:
@@ -23,17 +35,20 @@ def interesting(sc, text):
         msg = "%s %s%s" % ("looks like you just mentioned the ticket ", "https://bugs.earthdata.nasa.gov/browse/", id)
         sc.rtm_send_message("D14JN5VNE", msg)
 
-if sc.rtm_connect():
-    while True:
-        data = sc.rtm_read()
-        for datum in data:
-            if "type" in datum and datum["type"] == "message":
-                if "text" in datum:
-                    text = datum["text"]
-                    if "channel" in datum and datum["channel"] == "D14JN5VNE":
-                        interesting(sc, text)
-        #print data
-        time.sleep(1)
-else:
-    print "Connection Failed, invalid token?"
+def main():
+    sc = SlackClient(stringFromFiles())
+    if sc.rtm_connect():
+        while True:
+            data = sc.rtm_read()
+            for datum in data:
+                if "type" in datum and datum["type"] == "message":
+                    if "text" in datum:
+                        text = datum["text"]
+                        if "channel" in datum and datum["channel"] == "D14JN5VNE":
+                            interesting(sc, text)
+            #print data
+            time.sleep(1)
+    else:
+        print "Connection Failed, invalid token?"
 
+if __name__ == "__main__": main()
