@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import cgi
-import cgitb; cgitb.enable()  # for troubleshooting
+import cgitb #; cgitb.enable()  # for troubleshooting
+import os
 
 import urllib2
 
@@ -12,16 +13,23 @@ g or get <url>
 c or cmr <url>
 '''
 
-# C10000000-AAAAAA
-cmrCollectionsByPage = "https://cmr.earthdata.nasa.gov/search/collections.umm-json?%s=%s&page_size=%s&pretty=true"
-cmrCollections = "https://cmr.earthdata.nasa.gov/search/collections?%s=%s&pretty=true"
-cmrConcepts = "https://cmr.earthdata.nasa.gov/search/concepts/%s?pretty=true"
-cmrConceptRevisions = "https://cmr.earthdata.nasa.gov/search/concepts/%s/%s"
+if 'GATEWAY_INTERFACE' in os.environ:
+    cgitb.enable()
+else:
+    print ('Not CGI. CLI')
 
-form = cgi.FieldStorage()
-command = form.getvalue("command", "")
-text = form.getvalue("text", "")
-msg = ""
+def main():
+    # C10000000-AAAAAA
+    cmrCollectionsByPage = "https://cmr.earthdata.nasa.gov/search/collections.umm-json?%s=%s&page_size=%s&pretty=true"
+    cmrCollections = "https://cmr.earthdata.nasa.gov/search/collections?%s=%s&pretty=true"
+    cmrConcepts = "https://cmr.earthdata.nasa.gov/search/concepts/%s?pretty=true"
+    cmrConceptRevisions = "https://cmr.earthdata.nasa.gov/search/concepts/%s/%s"
+
+    form = cgi.FieldStorage()
+    command = form.getvalue("command", "")
+    text = form.getvalue("text", "")
+    msg = ""
+    process(command, text)
 
 def cmrLookup (url):
     found = False
@@ -84,7 +92,8 @@ def process(command, text):
     page (msg)
 
 def page(msg):
-    print "Content-type: text/plain"
+    print "Content-Type: text/html"
+    print ""
     print "%s" % (cgi.escape(msg))
 
 def test():
@@ -108,4 +117,5 @@ def test():
     print "----"
     process("toolbot", "help")
 
+main()
 #test()
