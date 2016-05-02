@@ -1,10 +1,12 @@
-#!/usr/python
+#!/usr/bin/python
 import cgi
 import cgitb; cgitb.enable()  # for troubleshooting
 
 import urllib2
 
 '''
+A slack command responder
+
 j or jira <bugid>
 g or get <url>
 c or cmr <url>
@@ -41,8 +43,16 @@ def process(command, text):
     global msg
     global cmrCollections
     global cmrConcepts
+    
     if command is None or command is "":
         msg = "Hello World"
+    elif command is "?" or command is "help":
+        template = "%s* %s %-10s - %s\n"
+        msg = "Commands:\n"
+        msg = template % (msg, "?", "help", "this message")
+        msg = template % (msg, "j", "jira [bug]", "url to jira")
+        msg = template % (msg, "c", "cmr [id]", "url to cmr")
+        msg = template % (msg, "h", "hangout", "url to hangout")
     elif command is "j" or command is "jira":
         msg = "https://bugs.earthdata.nasa.gov/browse/%s" % text
     elif command is "c" or command is "cmr" or command is "cmr-prod":
@@ -61,6 +71,16 @@ def process(command, text):
                 found, data = cmrLookup(url)
         if found:
             msg = url
+    elif command is "h" or command is "hangout":
+        msg = "https://hangouts.google.com/start"
+    elif command is "t" or command is "toolbot":
+        list = text.split()
+        if 0<len(list):
+            process(list[0], "")
+        elif 1<len(list):
+            process(list[0], " ".join(list[1:]))
+        return
+    
     page (msg)
 
 def page(msg):
@@ -79,5 +99,13 @@ def test():
     process("cmr", "msut2")
     print "----"
     process("cmr", "msut2_5")
+    print "----"
+    process("toolbot", "cmr msut2_5")
+    print "----"
+    process("toolbot", "c msut2_5")
+    print "----"
+    process("toolbot", "hangout")
+    print "----"
+    process("toolbot", "help")
 
 #test()

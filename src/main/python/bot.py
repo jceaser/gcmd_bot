@@ -4,6 +4,9 @@ import re
 import os.path
 
 '''
+This is a bot that listens to a slack project and response with comments
+
+
 [{u'type': u'user_typing', u'user': u'U13SD9KSN', u'channel': u'D14JN5VNE'}]
 [{u'text': u'test', u'ts': u'1461950344.000004', u'user': u'U13SD9KSN', u'team': u'T13S7BSJD', u'type': u'message', u'channel': u'D14JN5VNE'}]
 
