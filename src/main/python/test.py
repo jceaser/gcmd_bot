@@ -13,4 +13,8 @@ bots.action("time", "tell me the time")
 bots.action("time", "what time is it")
 bots.action("time", "time as of now?")
 
+print "----"
+
+bots.action("cmr", "CMRQ-1500");
+
 print
