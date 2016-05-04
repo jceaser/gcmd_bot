@@ -4,8 +4,7 @@ import urllib2
 import sys
 import datetime
 
-from BBot import BBot
-
+from b_bot import BBot
 
 #cmrCollectionsByPage = "https://cmr.earthdata.nasa.gov/search/collections.umm-json?%s=%s&page_size=%s&pretty=true"
 cmrCollections = "https://cmr.earthdata.nasa.gov/search/collections?%s=%s&pretty=true"
@@ -32,9 +31,11 @@ class BCmrLookup(BBot):
             found = False
         return found, data
     
-    def action(self, cmd, text):
+    def action(self, cmd, data):
         global cmrCollections
         global cmrConcepts
+        text = data[0]['text']
+        msg = None
         
         ''' text should be an id '''
         url = cmrConcepts % (text)
@@ -51,3 +52,4 @@ class BCmrLookup(BBot):
                 found, data = self.cmrLookup(url)
         if found:
             msg = url
+        return msg
