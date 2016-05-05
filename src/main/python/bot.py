@@ -9,6 +9,7 @@ from datetime import date
 from slackclient import SlackClient
 
 from bots.b_rpn import *
+from bots.b_bots import *
 
 '''
 This is a bot that listens to a slack project and response with comments
@@ -50,6 +51,7 @@ def match(regex, text):
     return ret
 
 def interesting(sc, text, channel):
+    '''
     m = re.search(".*(CMRQ-[\d]{1,4}).*", text)
     if m is not None:
         id = m.group(0)
@@ -76,7 +78,6 @@ def interesting(sc, text, channel):
         sc.rtm_send_message(channel, msg)
         return True
     
-    '''
     m = re.search("(current month)", text)
     if m is not None:
         c = calendar.TextCalendar()
@@ -85,8 +86,9 @@ def interesting(sc, text, channel):
         if cal is not None:
             msg = cal #.replace("\n", "<br>")
             sc.rtm_send_message(channel, msg)
-        return
+        return True
     '''
+    return False
 
 def schedule(sc, gen):
     today = datetime.date.today()
@@ -133,7 +135,11 @@ def main():
                                         #list = ["D14JN5VNE", sandbox.id]
                                         #if channel in list:
                                         if not interesting(sc, text, channel):
-                                            bots.action(datum)
+                                            print "do it the new way"
+                                            msg = bots.action(datum)
+                                            print "new way said\n%s\n" % msg
+                                            if msg is not None and 0<len(msg):
+                                                sc.rtm_send_message(channel, msg)
                         elif datum["type"] == "team_join":
                             print "Welcome back %s." % (datum["user"])
             except KeyboardInterrupt:

@@ -36,7 +36,6 @@ class BCmrLookup(BBot):
         global cmrCollections
         global cmrConcepts
         
-        text = data[0]['text']
         text = found.group(1)
         msg = None
         

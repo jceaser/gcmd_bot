@@ -5,7 +5,7 @@ import sys
 import datetime
 
 from b_bot import BBot
-from rand_str import RandomString
+from rand_str import *
 
 class BBadLang(BBot):
     def __init__(self):
@@ -23,7 +23,7 @@ class BBadLang(BBot):
         
     def action(self, cmd, data, found):
         msg = None
-        text = data[0]['text']
+        text = data['text']
         c = 0
         for word in self.bad:
             c = c +  text.count(word)

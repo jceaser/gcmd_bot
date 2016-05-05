@@ -70,7 +70,7 @@ class BRpn(BBot):
     
     
     def action(self, cmd, data, found):
-       return self.math(data[0]['text'])
+       return str(self.math(found.group(1)))
        
 
 def main(argv):
