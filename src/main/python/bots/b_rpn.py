@@ -1,5 +1,6 @@
-from BBot import BBot
 import sys, math
+
+from b_bot import BBot
 
 class BRpn(BBot):
     def __init__(self):
@@ -68,8 +69,8 @@ class BRpn(BBot):
         return stack.pop()
     
     
-    def action(self, cmd, text):
-       return "none"
+    def action(self, cmd, data):
+       return self.math(data[0]['text'])
        
 
 def main(argv):

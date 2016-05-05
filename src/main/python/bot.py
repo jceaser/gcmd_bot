@@ -1,11 +1,12 @@
 import time
-from slackclient import SlackClient
 import re
 import os.path
 import traceback
 import calendar
-from datetime import date
 import datetime
+from datetime import date
+
+from slackclient import SlackClient
 
 from bots.b_rpn import *
 

@@ -1,7 +1,7 @@
-from b_time import *
-from b_cmrlookup import *
+from b_bad_language import *
+from b_cmr_lookup import *
 from b_rpn import *
-from b_bad_lang import *
+from b_time import *
 
 import re
 
@@ -29,27 +29,13 @@ class BBots:
             elif action == "lang":
                 handler = BBadLang()
         if handler is not None:
-            print handler.action(action, data)
+            ans = handler.action(action, data)
+            if ans is not None: print ans
     
     def action(self, data):
         self.actIfInterested(".*(time)(?!\\w+).*", "time", data)   #what time is it
         self.actIfInterested(".*(CMRQ-[0-9]+).*", "jira", data)    #CMRQ-1500
         self.actIfInterested("^rpn:(.*)", "rpn", data)
         self.actIfInterested(".*", "lang", data)
-        
-        '''
-        what time is it
-        tell me the time
-        
-        how many records are in CMR
-        CMR count
-        
-        is CMR up
-        is GCMD up
-        is * up
-        
-        
-        
-        '''
-    
+
         
