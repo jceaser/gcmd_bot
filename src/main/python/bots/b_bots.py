@@ -1,5 +1,6 @@
 from b_bad_language import *
 from b_cmr_lookup import *
+from b_jira import *
 from b_rpn import *
 from b_time import *
 
@@ -17,24 +18,28 @@ class BBots:
             if 'text' in d:
                 text = d['text']
                 break
-        m = re.search(interest, text)
+        m = re.match(interest, text)
         if m is not None:
-            #print "%s: '%s' matching '%s'" % (action, text, interest)
             if action == "time":
                 handler = BTime()
             elif action == "cmr":
                 handler = BCmrLookup()
+            elif action == "jira":
+                handler = BJira()
             elif action == "rpn":
                 handler = BRpn()
             elif action == "lang":
                 handler = BBadLang()
         if handler is not None:
-            ans = handler.action(action, data)
+            ans = handler.action(action, data, m)
             if ans is not None: print ans
     
     def action(self, data):
         self.actIfInterested(".*(time)(?!\\w+).*", "time", data)   #what time is it
+        self.actIfInterested(".*(SCIOPS-[0-9]+).*", "jira", data)    #CMRQ-1500
         self.actIfInterested(".*(CMRQ-[0-9]+).*", "jira", data)    #CMRQ-1500
+        self.actIfInterested(".*(GCMD-[0-9]+).*", "jira", data)    #CMRQ-1500
+        self.actIfInterested(".*(CMR-[0-9]+).*", "jira", data)    #CMRQ-1500
         self.actIfInterested("^rpn:(.*)", "rpn", data)
         self.actIfInterested(".*", "lang", data)
 

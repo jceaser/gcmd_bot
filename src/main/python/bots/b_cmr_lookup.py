@@ -31,7 +31,7 @@ class BCmrLookup(BBot):
             found = False
         return found, data
     
-    def action(self, cmd, data):
+    def action(self, cmd, data, found):
         global cmrCollections
         global cmrConcepts
         text = data[0]['text']

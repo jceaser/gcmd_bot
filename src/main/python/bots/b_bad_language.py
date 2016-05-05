@@ -21,7 +21,7 @@ class BBadLang(BBot):
             , "I wish my programmers would let me say that."
             ])
         
-    def action(self, cmd, data):
+    def action(self, cmd, data, found):
         msg = None
         text = data[0]['text']
         c = 0

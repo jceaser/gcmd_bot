@@ -69,7 +69,7 @@ class BRpn(BBot):
         return stack.pop()
     
     
-    def action(self, cmd, data):
+    def action(self, cmd, data, found):
        return self.math(data[0]['text'])
        
 

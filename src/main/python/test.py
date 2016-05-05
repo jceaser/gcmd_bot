@@ -13,7 +13,7 @@ def update(data, text):
     return data
 
 bt = BTime()
-print bt.action("command", "text")
+print bt.action("command", "text", None)
 
 bots = BBots()
 print "Time:"
@@ -24,7 +24,13 @@ bots.action(update(data, "what time is it"))
 bots.action(update(data, "time as of now?"))
 
 print "----\nCMR:"
-bots.action(update(data, "CMRQ-1500"))
+bots.action(update(data, "C10000-SCIOPS"))
+
+print "----\nJira:"
+bots.action(update(data, "Ticket SCIOPS-100 needs help"))
+bots.action(update(data, "Ticket CMRQ-1500 is done"))
+bots.action(update(data, "GCMD-100"))
+bots.action(update(data, "CMR-2600 should work"))
 
 print "----\nRPN:"
 bots.action(update(data, "rpn: 1 2 3 + +"))

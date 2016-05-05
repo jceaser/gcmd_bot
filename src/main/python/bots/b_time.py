@@ -7,5 +7,5 @@ class BTime(BBot):
     def __init__(self):
         BBot.__init__(self)
     
-    def action(self, cmd, data):
+    def action(self, cmd, data, found):
         return "It is now %s" % (datetime.datetime.now())
