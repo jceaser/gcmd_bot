@@ -20,6 +20,7 @@ class BCmrLookup(BBot):
         data = None
         try:
             response = urllib2.urlopen(url)
+            response.addheaders = [('User-agent', 'GCMD-Bot')]
             data = response.read()
             hit = response.info().getheader('CMR-Hits')
             if hit is None or  0<int(hit):
@@ -34,19 +35,23 @@ class BCmrLookup(BBot):
     def action(self, cmd, data, found):
         global cmrCollections
         global cmrConcepts
+        
         text = data[0]['text']
+        text = found.group(1)
         msg = None
         
         ''' text should be an id '''
         url = cmrConcepts % (text)
         found, data = self.cmrLookup(url)
         if found:
-            msg = cgi.escape(data)
+            #msg = cgi.escape(data)
+            msg = data
         else:
             url = cmrCollections % ("entry_id", text)
             found, data = self.cmrLookup(url)
             if found:
-                msg = cgi.escape(data)
+                #msg = cgi.escape(data)
+                msg = data
             else:
                 url = cmrCollections % ("short_name", text)
                 found, data = self.cmrLookup(url)

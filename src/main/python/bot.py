@@ -56,7 +56,7 @@ def interesting(sc, text, channel):
         if id is not None and 0<len(id):
             msg = "%s %s%s" % ("looks like you just mentioned the ticket ", "https://bugs.earthdata.nasa.gov/browse/", id)
             sc.rtm_send_message(channel, msg)
-            return
+            return True
     
     m = re.search("(C1[0-9]{8,11}-[-_A-Za-z]{2,10})", text)
     if m is not None:
@@ -64,7 +64,7 @@ def interesting(sc, text, channel):
         if id is not None and 0<len(id):
             msg = "Were you talking about the collection https://cmr.sit.earthdata.nasa.gov/search/concepts/%s" % id
             sc.rtm_send_message(channel, msg)
-            return
+            return True
     
     id = match(r"rpn\(([^\)]+)\)", text)
     if id is not None:
@@ -74,7 +74,7 @@ def interesting(sc, text, channel):
         ans = rpn.math(id)
         msg = "I *love* doing math problems like _'%s'_. The answer is %s." % (id, ans)
         sc.rtm_send_message(channel, msg)
-        return
+        return True
     
     '''
     m = re.search("(current month)", text)
@@ -115,12 +115,15 @@ def main():
         else:
             print (sc)
         
+        bots = BBots()
+        
         while True:
             data = sc.rtm_read()
             try:
                 schedule(sc, gen)
                 for datum in data:
                     if "type" in datum:
+                        i = False
                         if datum["type"] == "message":
                             if "text" in datum:
                                 text = datum["text"]
@@ -129,7 +132,8 @@ def main():
                                         channel = datum["channel"]
                                         #list = ["D14JN5VNE", sandbox.id]
                                         #if channel in list:
-                                        interesting(sc, text, channel)
+                                        if not interesting(sc, text, channel):
+                                            bots.action(datum)
                         elif datum["type"] == "team_join":
                             print "Welcome back %s." % (datum["user"])
             except KeyboardInterrupt:

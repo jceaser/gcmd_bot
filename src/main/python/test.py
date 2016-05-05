@@ -23,9 +23,6 @@ bots.action(update(data, "tell me the time"))
 bots.action(update(data, "what time is it"))
 bots.action(update(data, "time as of now?"))
 
-print "----\nCMR:"
-bots.action(update(data, "C10000-SCIOPS"))
-
 print "----\nJira:"
 bots.action(update(data, "Ticket SCIOPS-100 needs help"))
 bots.action(update(data, "Ticket CMRQ-1500 is done"))
@@ -42,4 +39,16 @@ bots.action(update(data, "Only nice things said here"))
 bots.action(update(data, "frankly dear I don't give a damn!"))
 bots.action(update(data, "frankly dear I don't give a shit!"))
 
+print "----\nEncode:"
+bots.action(update(data, "encode: ({'json':'data'})"))
+bots.action(update(data, "decode: (%7B%27json%27%3A%27data%27%7D)"))
+
+'''
+print "----\nCMR:"
+bots.action(update(data, "C1214603708-SCIOPS"))
+bots.action(update(data, "find: C1214603708-SCIOPS"))
+bots.action(update(data, "find: C1214603708-SCIOPS/35"))
+bots.action(update(data, "find: msut2"))
+bots.action(update(data, "find: msut2_5"))
+'''
 print "----"
