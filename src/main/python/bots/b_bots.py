@@ -47,21 +47,21 @@ class BBots:
     def action(self, data):
         self.msgs = []
         
-        self.actIfInterested(".*(time)(?!\\w+).*", "time", data)   #what time is it
+        self.actIfInterested(".*(what time is it)(?!\\w+).*", "time", data)   #what time is it
         
-        self.actIfInterested(".*(C1[0-9]{9}-\w[-_\w]{0,9}).*", "cmr", data) #C1214603708-SCIOPS
-        self.actIfInterested("id:([_a-zA-Z0-9]+)", "cmr", data)     #id:msut2_5
-        self.actIfInterested("ids:([_a-zA-Z0-9]+)", "cmr_all", data)     #id:msut2_5
+        self.actIfInterested(r".*(C1[0-9]{9}-\w[-_\w]{0,9}).*", "cmr", data) #C1214603708-SCIOPS
+        self.actIfInterested(r".*id:([\./:_a-zA-Z0-9]+)\b", "cmr", data)     #id:msut2_5
+        self.actIfInterested(r".*ids:([\./:_a-zA-Z0-9]+)\b", "cmr_all", data)     #id:msut2_5
         
-        self.actIfInterested(".*(SCIOPS-[0-9]+).*", "jira", data)   #SCIOPS-1500
-        self.actIfInterested(".*(CMRQ-[0-9]+).*", "jira", data)     #CMRQ-1500
-        self.actIfInterested(".*(GCMD-[0-9]+).*", "jira", data)     #GCMD-1500
-        self.actIfInterested(".*(CMR-[0-9]+).*", "jira", data)      #CMR-1500
+        self.actIfInterested(r".*(SCIOPS-[0-9]+).*", "jira", data)   #SCIOPS-1500
+        self.actIfInterested(r".*(CMRQ-[0-9]+)\b", "jira", data)     #CMRQ-1500
+        self.actIfInterested(r".*(GCMD-[0-9]+)\b", "jira", data)     #GCMD-1500
+        self.actIfInterested(r".*(CMR-[0-9]+)\b", "jira", data)      #CMR-1500
         
         self.actIfInterested(".*rpn:\((.*?)\).*", "rpn", data)      #rpn:(2 2 +)
         
-        self.actIfInterested("encode:\((.*)\)", "encode", data)     #encode:(Hi There)
-        self.actIfInterested("decode:\((.*)\)", "decode", data)     #decode:(Hi%20There)
+        self.actIfInterested(".*encode:\((.*)\).*", "encode", data)     #encode:(Hi There)
+        self.actIfInterested(".*decode:\((.*)\).*", "decode", data)     #decode:(Hi%20There)
         
         self.actIfInterested(".*", "lang", data)
         

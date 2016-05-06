@@ -34,11 +34,15 @@ pbot(bots, data, "time as of now?")
 
 print "----\nJira:"
 pbot(bots, data, "Ticket SCIOPS-100 needs help")
+print "-"
 pbot(bots, data, "Ticket CMRQ-1500 is done")
+print "-"
 pbot(bots, data, "GCMD-100")
+print "-"
 pbot(bots, data, "CMR-2600 should work")
 
 print "----\nRPN:"
+pbot(bots, data, "a rpn:(1 2 3 + +) b")
 pbot(bots, data, "rpn:(1 2 3 + +)")
 pbot(bots, data, "rpn:(1 2 3 ^ +)")
 
@@ -64,5 +68,6 @@ print
 pbot(bots, data, "id:msut2_5")
 print
 pbot(bots, data, "ids:zzz415")
-
+print
+pbot(bots, data, "ids:doi:10.3334/ORNLDAAC/641_1")
 print "----"

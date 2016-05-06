@@ -20,6 +20,47 @@ This is a bot that listens to a slack project and response with comments
 
 [{text, ts, user, team, type, channel}]
 
+
+{
+    u'ok': True
+    , u'user':
+    {
+        u'status': None
+        , u'profile':
+        {
+            u'first_name': u'Chris'
+            , u'last_name': u'Gokey'
+            , u'image_1024': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_1024.jpg'
+            , u'real_name': u'Chris Gokey'
+            , u'image_24': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_24.jpg'
+            , u'image_original': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_original.jpg'
+            , u'real_name_normalized': u'Chris Gokey'
+            , u'image_512': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_512.jpg'
+            , u'image_32': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_32.jpg'
+            , u'image_48': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_48.jpg'
+            , u'image_72': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_72.jpg'
+            , u'avatar_hash': u'376a1d5ad4b6'
+            , u'email': u'cgokey@sesda3.com'
+            , u'image_192': u'https://avatars.slack-edge.com/2016-05-02/39518724470_376a1d5ad4b61e722e68_192.jpg'
+        }
+        , u'tz': u'America/Indiana/Indianapolis'
+        , u'name': u'cgokey'
+        , u'deleted': False
+        , u'is_bot': False
+        , u'tz_label': u'Eastern Daylight Time'
+        , u'real_name': u'Chris Gokey'
+        , u'color': u'4bbe2e'
+        , u'team_id': u'T13S7BSJD'
+        , u'is_admin': False
+        , u'is_ultra_restricted': False
+        , u'is_restricted': False
+        , u'is_owner': False
+        , u'tz_offset': -14400
+        , u'id': u'U13RZ7V0U'
+        , u'is_primary_owner': False
+    }
+}
+
 '''
 
 def stringFromFiles():
@@ -121,6 +162,7 @@ def main():
         gen = sc.server.channels.find("general")
         
         toolbot = sc.server.channels.find("Tooly McToolbot")
+        print sc.api_call('users.info', user='U13RZ7V0U')['user']['real_name']
         if toolbot is not None:
             sc.rtm_send_message(toolbot, "{'text':'I just woke up'}")
         else:
@@ -135,6 +177,9 @@ def main():
                 for datum in data:
                     if "type" in datum:
                         #i = False
+                        user = None
+                        if "user" in datum:
+                            user = sc.api_call("users.info", user=datum["user"])
                         if datum["type"] == "message":
                             if "text" in datum:
                                 text = datum["text"]
@@ -146,11 +191,11 @@ def main():
                                         if not interesting(sc, text, channel):
                                             print "do it the new way"
                                             msg = bots.action(datum)
-                                            print "new way said\n%s\n" % msg
+                                            print "message from %s" % user["user"]["real_name"]
                                             if msg is not None and 0<len(msg):
                                                 sc.rtm_send_message(channel, msg)
                         elif datum["type"] == "team_join":
-                            print "Welcome back %s." % (datum["user"])
+                            print "Welcome %s." % (datum["user"])
             except KeyboardInterrupt:
                 break
             except:
@@ -159,7 +204,13 @@ def main():
             
             if 0<len(data):
                 print data
-            time.sleep(1)
+            
+            if 5<now.hour and now.hour<20:
+                time.sleep(3)
+            elif now.hour<5:
+                dif = (5*60*60) - (now.hour*60 + hour.minute)*60 + hour.seconds
+                time.sleep(dif)
+            
     else:
         print "Connection Failed, invalid token?"
 
