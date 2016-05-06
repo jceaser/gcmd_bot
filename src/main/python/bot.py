@@ -52,6 +52,15 @@ def match(regex, text):
 
 def interesting(sc, text, channel):
     '''
+    m = re.search(".*().*", text)
+    if m is not None:
+        id = m.group(0)
+        if id is not None and 0<len(id):
+            msg = "%s %s%s" % ("looks like you just mentioned the ticket ", "https://bugs.earthdata.nasa.gov/browse/", id)
+            sc.rtm_send_message(channel, msg)
+            return True
+    '''
+    '''
     m = re.search(".*(CMRQ-[\d]{1,4}).*", text)
     if m is not None:
         id = m.group(0)
@@ -125,7 +134,7 @@ def main():
                 schedule(sc, gen)
                 for datum in data:
                     if "type" in datum:
-                        i = False
+                        #i = False
                         if datum["type"] == "message":
                             if "text" in datum:
                                 text = datum["text"]

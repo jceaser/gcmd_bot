@@ -27,6 +27,8 @@ class BBots:
                 handler = BTime()
             elif action == "cmr":
                 handler = BCmrLookup()
+            elif action == "cmr_all":
+                handler = BCmrLookup()
             elif action == "jira":
                 handler = BJira()
             elif action == "rpn":
@@ -47,18 +49,19 @@ class BBots:
         
         self.actIfInterested(".*(time)(?!\\w+).*", "time", data)   #what time is it
         
-        self.actIfInterested(".*(C1[0-9]{9}-\w[-_\w]{0,9}).*", "cmr", data) #CMRQ-1500
-        self.actIfInterested("find: ([_a-zA-Z0-9]+)", "cmr", data)          #CMRQ-1500
+        self.actIfInterested(".*(C1[0-9]{9}-\w[-_\w]{0,9}).*", "cmr", data) #C1214603708-SCIOPS
+        self.actIfInterested("id:([_a-zA-Z0-9]+)", "cmr", data)     #id:msut2_5
+        self.actIfInterested("ids:([_a-zA-Z0-9]+)", "cmr_all", data)     #id:msut2_5
         
-        self.actIfInterested(".*(SCIOPS-[0-9]+).*", "jira", data)           #CMRQ-1500
-        self.actIfInterested(".*(CMRQ-[0-9]+).*", "jira", data)    #CMRQ-1500
-        self.actIfInterested(".*(GCMD-[0-9]+).*", "jira", data)    #CMRQ-1500
-        self.actIfInterested(".*(CMR-[0-9]+).*", "jira", data)    #CMRQ-1500
+        self.actIfInterested(".*(SCIOPS-[0-9]+).*", "jira", data)   #SCIOPS-1500
+        self.actIfInterested(".*(CMRQ-[0-9]+).*", "jira", data)     #CMRQ-1500
+        self.actIfInterested(".*(GCMD-[0-9]+).*", "jira", data)     #GCMD-1500
+        self.actIfInterested(".*(CMR-[0-9]+).*", "jira", data)      #CMR-1500
         
-        self.actIfInterested(".*rpn: \((.*?)\).*", "rpn", data)
+        self.actIfInterested(".*rpn:\((.*?)\).*", "rpn", data)      #rpn:(2 2 +)
         
-        self.actIfInterested("encode: \((.*)\)", "encode", data)
-        self.actIfInterested("decode: \((.*)\)", "decode", data)
+        self.actIfInterested("encode:\((.*)\)", "encode", data)     #encode:(Hi There)
+        self.actIfInterested("decode:\((.*)\)", "decode", data)     #decode:(Hi%20There)
         
         self.actIfInterested(".*", "lang", data)
         
