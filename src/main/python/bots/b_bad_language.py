@@ -12,7 +12,7 @@ class BBadLang(BBot):
         BBot.__init__(self)
         self.base = "/usr/local/server-data/var"
         self.storage = "bbot_bad_lang.txt"
-        self.bad = ["fuck", "shit", "microsoft"]
+        self.bad = ["fuck", "shit", "ass", "microsoft is cool"]
         self.responses = RandomString(
             ["Watch the language"
             , "Someone is getting saucy"

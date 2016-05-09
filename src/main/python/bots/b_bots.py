@@ -39,6 +39,8 @@ class BBots:
                 handler = BEncode()
             elif action == "decode":
                 handler = BDecode()
+            elif action == "help":
+                self.manual()
         if handler is not None:
             ans = handler.action(action, data, m)
             if ans is not None:
@@ -46,6 +48,10 @@ class BBots:
     
     def action(self, data):
         self.msgs = []
+        
+        self.actIfInterested(r"(toolbot(, )?)?what can I do here(\?)+", "help", data)
+        self.actIfInterested(r"(toolbot(, )?)?help me!+", "help", data)
+        self.actIfInterested(r"(help me)", "help", data)
         
         self.actIfInterested(".*(what time is it)(?!\\w+).*", "time", data)   #what time is it
         
@@ -58,10 +64,11 @@ class BBots:
         self.actIfInterested(r".*(GCMD-[0-9]+)\b", "jira", data)     #GCMD-1500
         self.actIfInterested(r".*(CMR-[0-9]+)\b", "jira", data)      #CMR-1500
         
-        self.actIfInterested(".*rpn:\((.*?)\).*", "rpn", data)      #rpn:(2 2 +)
+        self.actIfInterested(r".*\brpn:\(([^\)\b]*)\).*", "rpn", data)      #rpn:(2 2 +)
+        #self.actIfInterested(".*rpn:\((.*?)\).*", "rpn", data)      #rpn:(2 2 +)
         
-        self.actIfInterested(".*encode:\((.*)\).*", "encode", data)     #encode:(Hi There)
-        self.actIfInterested(".*decode:\((.*)\).*", "decode", data)     #decode:(Hi%20There)
+        self.actIfInterested(r".*\bencode:\((.*)\).*", "encode", data)     #encode:(Hi There)
+        self.actIfInterested(r".*\bdecode:\((.*)\).*", "decode", data)     #decode:(Hi%20There)
         
         self.actIfInterested(".*", "lang", data)
         
@@ -70,7 +77,26 @@ class BBots:
             return msg
         else:
             return None
+    
+    def manual(self):
+        format = "%-25s | %25s"
+        self.msgs.append(format % ("Input", "Output"))
+        self.msgs.append(format % ("----------", "----------"))
+        self.msgs.append(format % ("what time is it", "current time and date"))
         
+        self.msgs.append(format % ("rpn:(1 2 +)", "3"))
+        self.msgs.append(format % ("encode:(Hi+There)", "Hi%20There"))
+        self.msgs.append(format % ("decode:(Hi%20There)", "Hi There"))
+        
+        self.msgs.append(format % ("C1234567890-Provider", "first URL to record"))
+        self.msgs.append(format % ("id:some_cmr_id", "first URL to record"))
+        self.msgs.append(format % ("ids:some_cmr_id", "all URLs to record"))
+        
+        self.msgs.append(format % ("SCIOPS-123", "URL to ticket"))
+        self.msgs.append(format % ("CMRQ-123", "URL to ticket"))
+        self.msgs.append(format % ("GCMD-123", "URL to ticket"))
+        self.msgs.append(format % ("CMR-123", "URL to ticket"))
+    
 def main(argv):
     bots = BBots()
     print bots.action("{u'text': u'testing CMRQ-1500 again', u'ts': u'1462474491.000084', u'user': u'U13SD9KSN', u'team': u'T13S7BSJD', u'type': u'message', u'channel': u'C14FTCSKV'}")

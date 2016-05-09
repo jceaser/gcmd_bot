@@ -32,19 +32,19 @@ pbot(bots, data, "tell me the time")
 pbot(bots, data, "what time is it")
 pbot(bots, data, "time as of now?")
 
-print "----\nJira:"
+print "----\nJira: (4 results)"
 pbot(bots, data, "Ticket SCIOPS-100 needs help")
-print "-"
 pbot(bots, data, "Ticket CMRQ-1500 is done")
-print "-"
 pbot(bots, data, "GCMD-100")
-print "-"
 pbot(bots, data, "CMR-2600 should work")
+pbot(bots, data, "CCMR-2601 should not work")
 
-print "----\nRPN:"
-pbot(bots, data, "a rpn:(1 2 3 + +) b")
+print "----\nRPN: (4 results)"
 pbot(bots, data, "rpn:(1 2 3 + +)")
-pbot(bots, data, "rpn:(1 2 3 ^ +)")
+pbot(bots, data, "before rpn:(1 2 3 - +)")
+pbot(bots, data, "rpn:(1 2 3 * +) after")
+pbot(bots, data, "before rpn:(1 2 3 / +) and after")
+pbot(bots, data, "continuouserpn:(1 2 3 ^ +)text")      # should not run
 
 print "----\nLang:"
 pbot(bots, data, "What the hell is going on")
@@ -53,8 +53,17 @@ pbot(bots, data, "frankly dear I don't give a damn!")
 pbot(bots, data, "frankly dear I don't give a shit!")
 
 print "----\nEncode:"
-pbot(bots, data, "encode:({'json':'data'})")
+pbot(bots, data, "encode:({'json':'data'}) this")
 pbot(bots, data, "decode:(%7B%27json%27%3A%27data%27%7D)")
+pbot(bots, data, "please encode:({'json':'data'}) this")
+pbot(bots, data, "please decode:(%7B%27json%27%3A%27data%27%7D) this")
+
+print "----\nHelp:"
+pbot(bots, data, "what can I do here")
+pbot(bots, data, "toolbot, help me")
+pbot(bots, data, "help me")
+
+exit()
 
 print "----\nCMR:"
 pbot(bots, data, "C1214603708-SCIOPS")
