@@ -12,7 +12,7 @@ class BBadLang(BBot):
         BBot.__init__(self)
         self.base = "/usr/local/server-data/var"
         self.storage = "bbot_bad_lang.txt"
-        self.bad = ["fuck", "shit", "ass", "microsoft is cool"]
+        self.bad = ["fuck", "shit", "ass"]
         self.responses = RandomString(
             ["Watch the language"
             , "Someone is getting saucy"
@@ -23,10 +23,10 @@ class BBadLang(BBot):
         
     def action(self, cmd, data, found):
         msg = None
-        text = data['text']
-        c = 0
-        for word in self.bad:
-            c = c +  text.count(word)
-        
-        if 0<c: msg = "\"%s\" - %s" % (text, self.responses.pick())
+        #text = data['text']
+        #c = 0
+        #for word in self.bad:
+        #    c = c +  text.count(word)
+        #
+        #if 0<c: msg = "\"%s\" - %s" % (text, self.responses.pick())
         return msg

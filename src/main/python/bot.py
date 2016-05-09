@@ -204,7 +204,7 @@ def main():
             
             if 0<len(data):
                 print data
-            
+            now = datetime.datetime.now() 
             if 5<now.hour and now.hour<20:
                 time.sleep(3)
             elif now.hour<5:
