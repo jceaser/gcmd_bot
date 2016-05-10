@@ -3,7 +3,7 @@ import cgi
 import cgitb #; cgitb.enable()  # for troubleshooting
 import os, sys
 
-import urllib2
+import urllib, urllib2
 
 from bots.b_bots import BBots
 
@@ -31,7 +31,9 @@ def cmd_main(argv):
 def cgi_main():
     form = cgi.FieldStorage()
     command = form.getvalue("command", "")
-    text = form.getvalue("text", "")
+    if command.startswith("/"):
+        command = command[1:]
+    text = urllib.unquote(form.getvalue("text", ""))
     msg = ""
     process(command, text)
 
@@ -55,18 +57,18 @@ def process(command, text):
     msg = ""
     bots = BBots()
     
-    if command is None or command is "":
+    if command is None or command == "":
         msg = "Hello World"
-    elif command is "?" or command is "help":
+    elif command == "?" or command == "help":
         template = "%s* %s %-10s - %s\n"
         msg = "Commands:\n"
         msg = template % (msg, "?", "help", "this message")
         msg = template % (msg, "j", "jira [bug]", "url to jira")
         msg = template % (msg, "c", "cmr [id]", "url to cmr")
         msg = template % (msg, "h", "hangout", "url to hangout")
-    elif command is "j" or command is "jira":
+    elif command == "j" or command == "jira":
         msg = "https://bugs.earthdata.nasa.gov/browse/%s" % text
-    elif command is "c" or command is "cmr" or command is "cmr-prod":
+    elif command == "c" or command == "cmr" or command == "cmr-prod":
         ''' text should be an id '''
         url = cmrConcepts % (text)
         found, data = cmrLookup(url)
@@ -82,9 +84,9 @@ def process(command, text):
                 found, data = cmrLookup(url)
         if found:
             msg = url
-    elif command is "h" or command is "hangout":
+    elif command == "h" or command == "hangout":
         msg = "https://hangouts.google.com/start"
-    elif command is "t" or command is "toolbot":
+    elif command == "t" or command == "toolbot":
         ##recursive
         #list = text.split()
         #if 0<len(list):
