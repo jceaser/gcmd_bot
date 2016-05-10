@@ -22,32 +22,50 @@ class BBots:
         else:
             return
         m = re.match(interest, text)
-        if m is not None:
-            if action == "time":
-                handler = BTime()
-            elif action == "cmr":
-                handler = BCmrLookup()
-            elif action == "cmr_all":
-                handler = BCmrLookup()
-            elif action == "jira":
-                handler = BJira()
-            elif action == "rpn":
-                handler = BRpn()
-            elif action == "lang":
-                handler = BBadLang()
-            elif action == "encode":
-                handler = BEncode()
-            elif action == "decode":
-                handler = BDecode()
-            elif action == "help":
-                self.manual()
-        if handler is not None:
-            ans = handler.action(action, data, m)
-            if ans is not None:
-                self.msgs.append(ans)
+        
+        list = re.finditer(interest, text)
+        for m in list:
+            if m is not None:
+                if action == "time":
+                    handler = BTime()
+                elif action == "cmr":
+                    handler = BCmrLookup()
+                elif action == "cmr_all":
+                    handler = BCmrLookup()
+                elif action == "jira":
+                    handler = BJira()
+                elif action == "rpn":
+                    handler = BRpn()
+                elif action == "lang":
+                    handler = BBadLang()
+                elif action == "encode":
+                    handler = BEncode()
+                elif action == "decode":
+                    handler = BDecode()
+                elif action == "help":
+                    self.manual()
+            if handler is not None:
+                ans = handler.action(action, data, m)
+                if ans is not None:
+                    self.msgs.append(ans)
     
     def action(self, data):
         self.msgs = []
+        if type(data) is dict:
+            pass
+        elif type(data) is list:
+            for i in data:
+                self.msgs.append(self.action, i)
+        elif type(data) is str:
+            data = {
+                u'text': data
+                , u'ts': str(datetime.datetime.now())
+                , u'user': u'Unspecified'
+                , u'team': u'Unspecified'
+                , u'type': u'message'
+                , u'channel': u'Unspecified'
+            }
+
         
         self.actIfInterested(r"(toolbot(, )?)?what can I do here(\?)+", "help", data)
         self.actIfInterested(r"(toolbot(, )?)?help me!+", "help", data)
@@ -55,25 +73,25 @@ class BBots:
         
         self.actIfInterested(".*(what time is it)(?!\\w+).*", "time", data)   #what time is it
         
-        self.actIfInterested(r".*(C1[0-9]{9}-\w[-_\w]{0,9}).*", "cmr", data) #C1214603708-SCIOPS
-        self.actIfInterested(r".*id:([\./:_a-zA-Z0-9]+)\b", "cmr", data)     #id:msut2_5
-        self.actIfInterested(r".*ids:([\./:_a-zA-Z0-9]+)\b", "cmr_all", data)     #id:msut2_5
+        self.actIfInterested(r"\b(C1[0-9]{9}-\w[-_\w]{0,9})\b", "cmr", data) #C1214603708-SCIOPS
+        self.actIfInterested(r"\bid:([\./:_a-zA-Z0-9]+)\b", "cmr", data)     #id:msut2_5
+        self.actIfInterested(r"\bids:([\./:_a-zA-Z0-9]+)\b", "cmr_all", data)     #id:msut2_5
         
-        self.actIfInterested(r".*(SCIOPS-[0-9]+).*", "jira", data)   #SCIOPS-1500
-        self.actIfInterested(r".*(CMRQ-[0-9]+)\b", "jira", data)     #CMRQ-1500
-        self.actIfInterested(r".*(GCMD-[0-9]+)\b", "jira", data)     #GCMD-1500
-        self.actIfInterested(r".*(CMR-[0-9]+)\b", "jira", data)      #CMR-1500
+        self.actIfInterested(r"\b(SCIOPS-[0-9]+)\b", "jira", data)   #SCIOPS-1500
+        self.actIfInterested(r"\b(CMRQ-[0-9]+)\b", "jira", data)     #CMRQ-1500
+        self.actIfInterested(r"\b(GCMD-[0-9]+)\b", "jira", data)     #GCMD-1500
+        self.actIfInterested(r"\b(CMR-[0-9]+)\b", "jira", data)      #CMR-1500
         
-        self.actIfInterested(r".*\brpn:\(([^\)\b]*)\).*", "rpn", data)      #rpn:(2 2 +)
+        self.actIfInterested(r"\brpn:\(([^\)\b]*)\)", "rpn", data)      #rpn:(2 2 +)
         #self.actIfInterested(".*rpn:\((.*?)\).*", "rpn", data)      #rpn:(2 2 +)
         
-        self.actIfInterested(r".*\bencode:\((.*)\).*", "encode", data)     #encode:(Hi There)
-        self.actIfInterested(r".*\bdecode:\((.*)\).*", "decode", data)     #decode:(Hi%20There)
+        self.actIfInterested(r"\bencode:\((.*)\)", "encode", data)     #encode:(Hi There)
+        self.actIfInterested(r"\bdecode:\((.*)\)", "decode", data)     #decode:(Hi%20There)
         
         self.actIfInterested(".*", "lang", data)
         
         if self.msgs is not None and 0<len(self.msgs):
-            msg = "\n".join(self.msgs)
+            msg = "\n- and -\n".join(self.msgs)
             return msg
         else:
             return None

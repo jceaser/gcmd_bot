@@ -32,18 +32,22 @@ pbot(bots, data, "tell me the time")
 pbot(bots, data, "what time is it")
 pbot(bots, data, "time as of now?")
 
-print "----\nJira: (4 results)"
+print "----\nJira: (6 results)"
 pbot(bots, data, "Ticket SCIOPS-100 needs help")
 pbot(bots, data, "Ticket CMRQ-1500 is done")
 pbot(bots, data, "GCMD-100")
 pbot(bots, data, "CMR-2600 should work")
+pbot(bots, data, "see CMR-2601 and GCMD-123")
+print "-"
 pbot(bots, data, "CCMR-2601 should not work")
 
-print "----\nRPN: (4 results)"
+print "----\nRPN: (6 results)"
 pbot(bots, data, "rpn:(1 2 3 + +)")
 pbot(bots, data, "before rpn:(1 2 3 - +)")
 pbot(bots, data, "rpn:(1 2 3 * +) after")
 pbot(bots, data, "before rpn:(1 2 3 / +) and after")
+pbot(bots, data, "do rpn:(1 2 3 - +) and rpn:(1 2 3 + -).")
+print "-"
 pbot(bots, data, "continuouserpn:(1 2 3 ^ +)text")      # should not run
 
 print "----\nLang:"
@@ -67,16 +71,10 @@ exit()
 
 print "----\nCMR:"
 pbot(bots, data, "C1214603708-SCIOPS")
-print
 pbot(bots, data, "id:C1214603708-SCIOPS")
-print
 pbot(bots, data, "id:C1214603708-SCIOPS/35")
-print
 pbot(bots, data, "id:msut2")
-print
 pbot(bots, data, "id:msut2_5")
-print
 pbot(bots, data, "ids:zzz415")
-print
 pbot(bots, data, "ids:doi:10.3334/ORNLDAAC/641_1")
 print "----"

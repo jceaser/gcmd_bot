@@ -1,9 +1,11 @@
 #!/usr/bin/python
 import cgi
 import cgitb #; cgitb.enable()  # for troubleshooting
-import os
+import os, sys
 
 import urllib2
+
+from bots.b_bots import BBots
 
 '''
 A slack command responder
@@ -15,16 +17,18 @@ c or cmr <url>
 
 if 'GATEWAY_INTERFACE' in os.environ:
     cgitb.enable()
-else:
-    print ('Not CGI. CLI')
+#else:
+#    print ('Not CGI. CLI')
 
-def main():
-    # C10000000-AAAAAA
-    cmrCollectionsByPage = "https://cmr.earthdata.nasa.gov/search/collections.umm-json?%s=%s&page_size=%s&pretty=true"
-    cmrCollections = "https://cmr.earthdata.nasa.gov/search/collections?%s=%s&pretty=true"
-    cmrConcepts = "https://cmr.earthdata.nasa.gov/search/concepts/%s?pretty=true"
-    cmrConceptRevisions = "https://cmr.earthdata.nasa.gov/search/concepts/%s/%s"
+cmrCollectionsByPage = "https://cmr.earthdata.nasa.gov/search/collections.umm-json?%s=%s&page_size=%s&pretty=true"
+cmrCollections = "https://cmr.earthdata.nasa.gov/search/collections?%s=%s&pretty=true"
+cmrConcepts = "https://cmr.earthdata.nasa.gov/search/concepts/%s?pretty=true"
+cmrConceptRevisions = "https://cmr.earthdata.nasa.gov/search/concepts/%s/%s"
 
+def cmd_main(argv):
+    process("toolbot", " ".join(argv))
+
+def cgi_main():
     form = cgi.FieldStorage()
     command = form.getvalue("command", "")
     text = form.getvalue("text", "")
@@ -48,9 +52,8 @@ def cmrLookup (url):
     return found, data
 
 def process(command, text):
-    global msg
-    global cmrCollections
-    global cmrConcepts
+    msg = ""
+    bots = BBots()
     
     if command is None or command is "":
         msg = "Hello World"
@@ -82,19 +85,25 @@ def process(command, text):
     elif command is "h" or command is "hangout":
         msg = "https://hangouts.google.com/start"
     elif command is "t" or command is "toolbot":
-        list = text.split()
-        if 0<len(list):
-            process(list[0], "")
-        elif 1<len(list):
-            process(list[0], " ".join(list[1:]))
-        return
+        ##recursive
+        #list = text.split()
+        #if 0<len(list):
+        #    process(list[0], "")
+        #elif 1<len(list):
+        #    process(list[0], " ".join(list[1:]))
+        #return
+        
+        msg = bots.action(text)
     
     page (msg)
 
 def page(msg):
     print "Content-Type: text/html"
     print ""
-    print "%s" % (cgi.escape(msg))
+    if msg is None:
+        print "No respones"
+    else:
+        print "%s" % (cgi.escape(msg))
 
 def test():
     process("", "")
@@ -117,5 +126,10 @@ def test():
     print "----"
     process("toolbot", "help")
 
-main()
-#test()
+if 'GATEWAY_INTERFACE' in os.environ:
+    cgi_main()
+elif __name__ == "__main__":
+    if sys.argv[1] == "--test":
+        test()
+    else:
+        cmd_main(sys.argv[1:])
