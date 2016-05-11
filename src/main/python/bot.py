@@ -141,15 +141,28 @@ def interesting(sc, text, channel):
     return False
 
 def schedule(sc, gen):
+    # todo: move this to a config file
     today = datetime.date.today()
     now = datetime.datetime.now()
+    
+    if 5<=today.weekday():
+        # nothing over the weekend
+        return
+    if 4==today.weekday() and now.hour==8 and now.minute==0 and now.second==0:
+        sc.rtm_send_message(gen.id, "Happy Friday")
+    
+    if 4==today.weekday() and today.day()==13 and now.hour==8 and now.minute==0 and now.second==0:
+        sc.rtm_send_message(gen.id, "Happy Friday the 13th!!!!!")
     
     if today.weekday()==2:
         if now.hour == 11 and now.minute == 0 and now.second == 0:
             sc.rtm_send_message(gen.id, "Time for lunch soon.")
 
     if now.hour == 18 and now.minute == 1 and now.second == 0:
-        sc.rtm_send_message(gen.id, "Go home, I need these computers to myself.")
+        sc.rtm_send_message(gen.id, "Go home, I need to talk to myself.")
+    
+    if now.hour == 11 and now.minute == 11 and now.second < 4:
+        sc.rtm_send_message(gen.id, "Make a wish")
     
     if now.hour == 15 and now.minute == 14 and now.second == 16:
         sc.rtm_send_message(gen.id, "Time for pi.")
@@ -202,14 +215,20 @@ def main():
                 traceback.print_exc()
                 #print sys.exc_info()[0]
             
-            if 0<len(data):
-                print data
-            now = datetime.datetime.now() 
-            if 5<now.hour and now.hour<20:
-                time.sleep(3)
-            elif now.hour<5:
-                dif = (5*60*60) - (now.hour*60 + hour.minute)*60 + hour.seconds
-                time.sleep(dif)
+            try:
+                if 0<len(data):
+                    print data
+                now = datetime.datetime.now()
+                if 5<=now.weekday():
+                    time.sleep(5*60)
+                elif 5<now.hour and now.hour<20:
+                    time.sleep(2)
+                elif now.hour<5:
+                    dif = (5*60*60) - (now.hour*60 + now.minute)*60 + now.second
+                    time.sleep(dif)
+            except:
+                traceback.print_exc()
+                time.sleep(1)
             
     else:
         print "Connection Failed, invalid token?"
