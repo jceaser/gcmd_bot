@@ -1,36 +1,44 @@
 #!/usr/python
 
 import json
-import urllib
-import urllib2
-import sys
+import urllib, urllib2
+import sys, os
 
-token = "xoxb-38623745957-A5bGdcc7PNCVPbF2P4Awib43"
 rtmStart = "https://slack.com/api/rtm.start?token=%s&scope=client&simple_latest=true&no_unreads=true"
 chatPost = "https://slack.com/api/chat.postMessage?token=%s&channel=%s&text=%s"
 
-def first():
-    response = urllib2.urlopen(rtmStart % token)
-    jdat = response.read()
+def stringFromFiles():
+    text = stringFromFile(".token.txt")
+    if (text is None):
+        text = stringFromFile("~/.token.txt")
+    if (text is None):
+        text = stringFromFile("~/.slack_token.txt")
+    if (text is None):
+        text = stringFromFile("/usr/local/etc/slack_token.txt")
+    if text is not None:
+        text = text.strip()
+    return text
 
-    data = json.loads(jdat)
+def stringFromFile(file):
+    string = None
+    if os.path.isfile(file):
+        f = open(file,"r")
+        string = f.read()
+    return string
 
-    if data['ok']:
-        text = ""
-        for line in sys.stdin:
-            text = "%s%s" % (text, line)
+def main(argv):
+    #print "%s %s" % (os.getcwd(), argv[0])
+    if len(argv)<1 or argv[0] == "--test":
+        return
         
-        for c in data["channels"]:
-            if c['name'] == "sandbox":
-                print "here"
-                #response = urllib2.urlopen(chatPost % (token, c['id'], text))
-    else:
-        print "Login issue"
-
-def second():
+    channel="ttest"
+    if 0<len(argv):
+        channel = argv[0]
+    
     '''
     Send standard in to slack.com
     '''
+    token = stringFromFiles()
     req = urllib2.Request(rtmStart % token)
     resp = urllib2.urlopen(req)
     jdat = resp.read()
@@ -40,20 +48,25 @@ def second():
     if data['ok']:
         text = ""
         for line in sys.stdin:
-            text = "%s\\n%s" % (text, line.strip())
+            if len(text)<1:
+                text = line.strip()
+            else:
+                text = "%s\\n%s" % (text, line.strip())
         
         for c in data["channels"]:
-            if c['name'] == "sandbox":
-                jdata2 = '{"id":1,"type":"message","channel":"%s","text": "%s"}' % (c['id'], text.strip())
-                #print jdata2
-                post_data = urllib.urlencode(json.loads(jdata2))
-                #post_data = urllib.urlencode(jdata2)   #.replace("\n", "*"))
-                #print post_data
-                req2 = urllib2.Request(chatPost % (token, c['id'], post_data))
+            #if c['name'] == "sandbox":
+            if c['name'] == channel:
+                jtemp = '{"id":"1","type":"message","channel":"%s","text": "%s"}'
+                jdata2 = jtemp % (c['id'], text.strip())
+                
+                #post_data = urllib.quote_plus(json.dumps(json.loads(jdata2)))
+                post_data = urllib.quote_plus(text.strip())
+                cpost_url = chatPost % (token, c['id'], post_data)
+                
+                print cpost_url
+                req2 = urllib2.Request(cpost_url)
                 resp2 = urllib2.urlopen(req2)
-                #print resp2
     else:
         print "Login issue"
-
-#first()
-second()
+    
+if __name__ == "__main__": main(sys.argv[1:])
