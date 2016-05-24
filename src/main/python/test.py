@@ -41,6 +41,16 @@ pbot(bots, data, "see CMR-2601 and GCMD-123")
 print "-"
 pbot(bots, data, "CCMR-2601 should not work")
 
+print "----\nMemory: (2 results)"
+pbot(bots, data, "toolbot remember name value")
+print "-"
+pbot(bots, data, "toolbot recall name")
+print "--"
+pbot(bots, data, "remember file1 some long text that is important")
+print "-"
+pbot(bots, data, "recall file1")
+print ""
+
 print "----\nRPN: (6 results)"
 pbot(bots, data, "rpn:(1 2 3 + +)")
 pbot(bots, data, "before rpn:(1 2 3 - +)")

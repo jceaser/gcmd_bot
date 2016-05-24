@@ -4,6 +4,7 @@ from b_encode import *
 from b_jira import *
 from b_rpn import *
 from b_time import *
+from b_remember import *
 
 import re
 
@@ -42,6 +43,10 @@ class BBots:
                     handler = BEncode()
                 elif action == "decode":
                     handler = BDecode()
+                elif action == "remember":
+                    handler = BRemember()
+                elif action == "recall":
+                    handler = BRecall()
                 elif action == "help":
                     self.manual()
             if handler is not None:
@@ -87,6 +92,9 @@ class BBots:
         
         self.actIfInterested(r"\bencode:\((.*)\)", "encode", data)     #encode:(Hi There)
         self.actIfInterested(r"\bdecode:\((.*)\)", "decode", data)     #decode:(Hi%20There)
+        
+        self.actIfInterested(r"\bremember\s([a-zA-z]+)\s(.*)$", "remember", data)
+        self.actIfInterested(r"\brecall\s([a-zA-Z]+)", "recall", data)
         
         self.actIfInterested(".*", "lang", data)
         

@@ -10,6 +10,7 @@ from slackclient import SlackClient
 
 from bots.b_rpn import *
 from bots.b_bots import *
+from rand_str import *
 
 '''
 This is a bot that listens to a slack project and response with comments
@@ -63,6 +64,20 @@ This is a bot that listens to a slack project and response with comments
 
 '''
 
+sleep_limit = 1
+
+def sleepUp():
+    global sleep_limit
+    sleep_limit = sleep_limit + 1
+    sleep_limit = min(600, sleep_limit+1)
+    time.sleep(sleep_limit)
+    
+def sleepDown(sec=1):
+    global sleep_limit
+    sleep_limit = sleep_limit - 1
+    sleep_limit = max(sec, sleep_limit-1)
+    time.sleep(sleep_limit)
+    
 def stringFromFiles():
     text = stringFromFile(".token.txt")
     if (text is None):
@@ -148,24 +163,66 @@ def schedule(sc, gen):
     if 5<=today.weekday():
         # nothing over the weekend
         return
-    if 4==today.weekday() and now.hour==8 and now.minute==0 and now.second==0:
-        sc.rtm_send_message(gen.id, "Happy Friday")
     
-    if 4==today.weekday() and today.day()==13 and now.hour==8 and now.minute==0 and now.second==0:
-        sc.rtm_send_message(gen.id, "Happy Friday the 13th!!!!!")
+    #always show one
+    if today.weekday()==4 and today.day==13 and now.hour==8 and now.minute==13 and now.second<2:
+        friday = RandomString([
+            "Happy Friday the 13th!!!!!"
+            , "Don't be scared today, it's only Friday the 13th."
+        ])
+        sc.rtm_send_message(gen.id, friday.pick())
+    elif today.weekday()==4 and now.hour==8 and now.minute==0 and now.second<2:
+        friday = RandomString([
+            "Happy Friday"
+            ,"Friday!!!"
+            ,"I can't wait for Monday, I'm not feeling well"
+            ,"Is it the weekend yet?"
+        ])
+        sc.rtm_send_message(gen.id, friday.pick())
     
-    if today.weekday()==2:
-        if now.hour == 11 and now.minute == 0 and now.second == 0:
-            sc.rtm_send_message(gen.id, "Time for lunch soon.")
-
-    if now.hour == 18 and now.minute == 1 and now.second == 0:
-        sc.rtm_send_message(gen.id, "Go home, I need to talk to myself.")
+    #always show one
+    if today.weekday()==2 and now.hour==11 and now.minute==0 and now.second<2:
+        lunch = RandomString([
+            "Time for lunch soon."
+            , "I'm ready or lunch."
+        ])
+        sc.rtm_send_message(gen.id, lunch.pick())
     
-    if now.hour == 11 and now.minute == 11 and now.second < 4:
-        sc.rtm_send_message(gen.id, "Make a wish")
+    #only if lucky
+    if today.weekday()==0 and now.hour==7 and now.minute==0 and now.second==0:
+        lunch = RandomString([
+            "Monday already?"
+            , "I hope no one has a case of the Mondays."
+        ])
+        sc.rtm_send_message(gen.id, lunch.pick())
     
-    if now.hour == 15 and now.minute == 14 and now.second == 16:
-        sc.rtm_send_message(gen.id, "Time for pi.")
+    #always show one
+    if now.hour==19 and now.minute==1 and now.second<2:
+        rs = RandomString([
+            "Go home, I need to talk to myself."
+            ,"Why are you still on line?"
+            ,"I'm good enough, I'm smart enough, and gosh darn it people like me... Oo are you still here, I'm just talking to my self."
+            ,"How many metadata records can I delete before anyone gets back to the office..."
+        ])
+        sc.rtm_send_message(gen.id, rs.pick())
+    
+    #only if lucky
+    if now.hour == 11 and now.minute == 11 and now.second == 11:
+        wish = RandomString([
+            "Make a wish"
+            , "What did you wish for?"
+        ])
+        sc.rtm_send_message(gen.id, wish.pick())
+    
+    #only if lucky
+    if now.hour==15 and now.minute==14 and now.second==16:
+        pi = RandomString([
+            "Time for pi."
+            ,"Who wants pi?"
+            ,"Mmmmm pi..."
+            ,"In the circle of life, would it be rad if we had 2 pi?"
+        ])
+        sc.rtm_send_message(gen.id, pi.pick())
     
 def main():
     sc = SlackClient(stringFromFiles())
@@ -183,8 +240,23 @@ def main():
         
         bots = BBots()
         
+        limit = 1
+        
         while True:
-            data = sc.rtm_read()
+            data = None
+            try:
+                data = sc.rtm_read()
+            except WebSocketConnectionClosedException:
+                print "WebSocketConnectionClosedException, try to reconnect"
+                sleepUp()
+                
+                sc = SlackClient(stringFromFiles())
+                sc.rtm_connet()
+            except:
+                #issue with API or Network, throttle the attempt
+                traceback.print_exc()
+                print "slow things down: %d" + limit
+                sleepUp()
             try:
                 schedule(sc, gen)
                 for datum in data:
@@ -220,16 +292,18 @@ def main():
                     print data
                 now = datetime.datetime.now()
                 if 5<=now.weekday():
-                    time.sleep(5*60)
+                    #weekends
+                    sleepDown(10*60)
                 elif 5<now.hour and now.hour<20:
-                    time.sleep(2)
+                    #work hours
+                    sleepDown()
                 elif now.hour<5:
+                    #weekday, off hours
                     dif = (5*60*60) - (now.hour*60 + now.minute)*60 + now.second
-                    time.sleep(dif)
+                    sleepDown(dif)
             except:
                 traceback.print_exc()
-                time.sleep(1)
-            
+                sleepUp()
     else:
         print "Connection Failed, invalid token?"
 
