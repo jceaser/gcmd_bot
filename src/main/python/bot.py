@@ -5,6 +5,7 @@ import traceback
 import calendar
 import datetime
 from datetime import date
+from websocket import WebSocketConnectionClosedException
 
 from slackclient import SlackClient
 
@@ -225,6 +226,7 @@ def schedule(sc, gen):
         sc.rtm_send_message(gen.id, pi.pick())
     
 def main():
+    running = True
     sc = SlackClient(stringFromFiles())
     if sc.rtm_connect():
         #print sc.server.channels.find("D14JN5VNE")
@@ -242,7 +244,7 @@ def main():
         
         limit = 1
         
-        while True:
+        while running:
             data = None
             try:
                 data = sc.rtm_read()
@@ -251,12 +253,15 @@ def main():
                 sleepUp()
                 
                 sc = SlackClient(stringFromFiles())
-                sc.rtm_connet()
+                sc.rtm_connect()
             except:
                 #issue with API or Network, throttle the attempt
                 traceback.print_exc()
-                print "slow things down: %d" + limit
+                print "slow things down: %d" % limit
                 sleepUp()
+            if data is None:
+                sleepUp()
+                continue
             try:
                 schedule(sc, gen)
                 for datum in data:
@@ -288,7 +293,7 @@ def main():
                 #print sys.exc_info()[0]
             
             try:
-                if 0<len(data):
+                if data is not None and 0<len(data):
                     print data
                 now = datetime.datetime.now()
                 if 5<=now.weekday():
@@ -301,6 +306,8 @@ def main():
                     #weekday, off hours
                     dif = (5*60*60) - (now.hour*60 + now.minute)*60 + now.second
                     sleepDown(dif)
+                elif 18<now.hour:
+                    running = False
             except:
                 traceback.print_exc()
                 sleepUp()

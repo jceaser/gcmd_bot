@@ -74,7 +74,7 @@ class BBots:
         
         self.actIfInterested(r"(toolbot(, )?)?what can I do here(\?)+", "help", data)
         self.actIfInterested(r"(toolbot(, )?)?help me!+", "help", data)
-        self.actIfInterested(r"(help me)", "help", data)
+        self.actIfInterested(r"(help me toolbot)", "help", data)
         
         self.actIfInterested(".*(what time is it)(?!\\w+).*", "time", data)   #what time is it
         
