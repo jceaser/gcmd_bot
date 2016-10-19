@@ -1,4 +1,4 @@
-
+import sys
 from bots.b_time import BTime
 from bots.b_bots import BBots
 
@@ -50,6 +50,14 @@ pbot(bots, data, "remember file1 some long text that is important")
 print "-"
 pbot(bots, data, "recall file1")
 print ""
+pbot(bots, data, "remember:(foo bar)")
+print ""
+pbot(bots, data, "recall:(foo)")
+print ""
+pbot(bots, data, "can you remember:(GCMD cool)")
+print ""
+pbot(bots, data, "do you recall:(GCMD)")
+print ""
 
 print "----\nRPN: (6 results)"
 pbot(bots, data, "rpn:(1 2 3 + +)")
@@ -76,15 +84,29 @@ print "----\nHelp:"
 pbot(bots, data, "what can I do here")
 pbot(bots, data, "toolbot, help me")
 pbot(bots, data, "help me")
+pbot(bots, data, "help me toolbot")
 
-exit()
+print "----\nRoom/Hangout:"
+pbot(bots, data, "\\room")
+pbot(bots, data, "\\hangout")
 
-print "----\nCMR:"
-pbot(bots, data, "C1214603708-SCIOPS")
-pbot(bots, data, "id:C1214603708-SCIOPS")
-pbot(bots, data, "id:C1214603708-SCIOPS/35")
-pbot(bots, data, "id:msut2")
-pbot(bots, data, "id:msut2_5")
-pbot(bots, data, "ids:zzz415")
-pbot(bots, data, "ids:doi:10.3334/ORNLDAAC/641_1")
-print "----"
+if 1<len(sys.argv) and sys.argv[1]=="internet":
+    #exit()
+    
+    print "----\nWeather:"
+    pbot(bots, data, "local weather)")
+
+    print "----\nGET:"
+    pbot(bots, data, "get:(http://gcmdservices.gsfc.nasa.gov/kms/)")
+
+
+    print "----\nCMR:"
+    pbot(bots, data, "C1214603708-SCIOPS")
+    pbot(bots, data, "id:C1214603708-SCIOPS")
+    pbot(bots, data, "id:C1214603708-SCIOPS/35")
+    pbot(bots, data, "id:msut2")
+    pbot(bots, data, "id:msut2_5")
+    pbot(bots, data, "ids:zzz415")
+    pbot(bots, data, "ids:doi:10.3334/ORNLDAAC/641_1")
+    print "----"
+

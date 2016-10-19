@@ -5,6 +5,9 @@ from b_jira import *
 from b_rpn import *
 from b_time import *
 from b_remember import *
+from b_room import *
+from b_download import *
+from b_weather import *
 
 import re
 
@@ -47,6 +50,19 @@ class BBots:
                     handler = BRemember()
                 elif action == "recall":
                     handler = BRecall()
+                
+                elif action == "room":
+                    handler = BRoom()
+                    handler.mode = "room"
+                
+                elif action == "hangout":
+                    handler = BRoom()
+                    handler.mode = "hangout"
+                
+                elif action == "download":
+                    handler = BDown()
+                elif action == "weather":
+                    handler = BWeather()
                 elif action == "help":
                     self.manual()
             if handler is not None:
@@ -76,11 +92,11 @@ class BBots:
         self.actIfInterested(r"(toolbot(, )?)?help me!+", "help", data)
         self.actIfInterested(r"(help me toolbot)", "help", data)
         
-        self.actIfInterested(".*(what time is it)(?!\\w+).*", "time", data)   #what time is it
+        self.actIfInterested(".*(what time is it)(?!\\w+).*", "time", data)     #what time is it
         
-        self.actIfInterested(r"\b(C1[0-9]{9}-\w[-_\w]{0,9})\b", "cmr", data) #C1214603708-SCIOPS
-        self.actIfInterested(r"\bid:([\./:_a-zA-Z0-9]+)\b", "cmr", data)     #id:msut2_5
-        self.actIfInterested(r"\bids:([\./:_a-zA-Z0-9]+)\b", "cmr_all", data)     #id:msut2_5
+        self.actIfInterested(r"\b(C1[0-9]{9}-\w[-_\w]{0,9})\b", "cmr", data)    #C1214603708-SCIOPS
+        self.actIfInterested(r"\bid:([\./:_a-zA-Z0-9]+)\b", "cmr", data)        #id:msut2_5
+        self.actIfInterested(r"\bids:([\./:_a-zA-Z0-9]+)\b", "cmr_all", data)   #id:msut2_5
         
         self.actIfInterested(r"\b(SCIOPS-[0-9]+)\b", "jira", data)   #SCIOPS-1500
         self.actIfInterested(r"\b(CMRQ-[0-9]+)\b", "jira", data)     #CMRQ-1500
@@ -93,10 +109,18 @@ class BBots:
         self.actIfInterested(r"\bencode:\((.*)\)", "encode", data)     #encode:(Hi There)
         self.actIfInterested(r"\bdecode:\((.*)\)", "decode", data)     #decode:(Hi%20There)
         
-        self.actIfInterested(r"\bremember\s([a-zA-z]+)\s(.*)$", "remember", data)
-        self.actIfInterested(r"\brecall\s([a-zA-Z]+)", "recall", data)
+        self.actIfInterested(r"\bremember:\(([a-zA-z]+)\s(.*)\)", "remember", data)
+        self.actIfInterested(r"\brecall:\(([a-zA-Z]+)\)", "recall", data)
+        
+        self.actIfInterested(r"\\room", "room", data)
+        self.actIfInterested(r"\\hangout", "hangout", data)
+        
+        self.actIfInterested(r"\b(local weather)\b", "weather", data)
+        
+        self.actIfInterested(r"\bget:\((.*)\)", "download", data)     #get:(http://url.com)
         
         self.actIfInterested(".*", "lang", data)
+        
         
         if self.msgs is not None and 0<len(self.msgs):
             msg = "\n- and -\n".join(self.msgs)
@@ -109,6 +133,8 @@ class BBots:
         self.msgs.append(format % ("Input", "Output"))
         self.msgs.append(format % ("----------", "----------"))
         self.msgs.append(format % ("what time is it", "current time and date"))
+        self.msgs.append(format % ("local weather", "current weather"))
+        #self.msgs.append(format % ("cal", "calendar"))
         
         self.msgs.append(format % ("rpn:(1 2 +)", "3"))
         self.msgs.append(format % ("encode:(Hi+There)", "Hi%20There"))
