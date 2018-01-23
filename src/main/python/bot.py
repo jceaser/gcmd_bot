@@ -306,7 +306,8 @@ def main():
                     #weekday, off hours
                     dif = (5*60*60) - (now.hour*60 + now.minute)*60 + now.second
                     sleepDown(dif)
-                elif 18<now.hour:
+                elif 18<now.hour-5:
+                    print "shutting down as it is now after %d" % now.hour
                     running = False
             except:
                 traceback.print_exc()
