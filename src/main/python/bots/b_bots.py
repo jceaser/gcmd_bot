@@ -102,6 +102,7 @@ class BBots:
         self.actIfInterested(r"\b(CMRQ-[0-9]+)\b", "jira", data)     #CMRQ-1500
         self.actIfInterested(r"\b(GCMD-[0-9]+)\b", "jira", data)     #GCMD-1500
         self.actIfInterested(r"\b(CMR-[0-9]+)\b", "jira", data)      #CMR-1500
+        self.actIfInterested(r"\b(MMT-[0-9]+)\b", "jira", data)   #MMT-1500
         
         self.actIfInterested(r"\brpn:\(([^\)\b]*)\)", "rpn", data)      #rpn:(2 2 +)
         #self.actIfInterested(".*rpn:\((.*?)\).*", "rpn", data)      #rpn:(2 2 +)
