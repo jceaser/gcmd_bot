@@ -226,93 +226,101 @@ def schedule(sc, gen):
         sc.rtm_send_message(gen.id, pi.pick())
     
 def main():
+    first = True
     running = True
     sc = SlackClient(stringFromFiles())
-    if sc.rtm_connect():
-        #print sc.server.channels.find("D14JN5VNE")
-        sandbox = sc.server.channels.find("sandbox")
-        gen = sc.server.channels.find("general")
+    while running:
+        if sc.rtm_connect():
+            if first:
+                first = False
+            else:
+                sleepDown()
+            #print sc.server.channels.find("D14JN5VNE")
+            sandbox = sc.server.channels.find("sandbox")
+            gen = sc.server.channels.find("general")
         
-        toolbot = sc.server.channels.find("Tooly McToolbot")
-        print sc.api_call('users.info', user='U13RZ7V0U')['user']['real_name']
-        if toolbot is not None:
-            sc.rtm_send_message(toolbot, "{'text':'I just woke up'}")
-        else:
-            print (sc)
+            toolbot = sc.server.channels.find("Tooly McToolbot")
+            print sc.api_call('users.info', user='U13RZ7V0U')['user']['real_name']
+            if toolbot is not None:
+                sc.rtm_send_message(toolbot, "{'text':'I just woke up'}")
+            else:
+                print (sc)
         
-        bots = BBots()
+            bots = BBots()
         
-        limit = 1
+            limit = 1
         
-        while running:
-            data = None
-            try:
-                data = sc.rtm_read()
-            except WebSocketConnectionClosedException:
-                print "WebSocketConnectionClosedException, try to reconnect"
-                sleepUp()
+            while running:
+                data = None
+                try:
+                    data = sc.rtm_read()
+                except WebSocketConnectionClosedException:
+                    print "WebSocketConnectionClosedException, try to reconnect"
+                    sleepUp()
                 
-                sc = SlackClient(stringFromFiles())
-                sc.rtm_connect()
-            except:
-                #issue with API or Network, throttle the attempt
-                traceback.print_exc()
-                print "slow things down: %d" % limit
-                sleepUp()
-            if data is None:
-                sleepUp()
-                continue
-            try:
-                schedule(sc, gen)
-                for datum in data:
-                    if "type" in datum:
-                        #i = False
-                        user = None
-                        if "user" in datum:
-                            user = sc.api_call("users.info", user=datum["user"])
-                        if datum["type"] == "message":
-                            if "text" in datum:
-                                text = datum["text"]
-                                if text is not None:
-                                    if "channel" in datum:
-                                        channel = datum["channel"]
-                                        #list = ["D14JN5VNE", sandbox.id]
-                                        #if channel in list:
-                                        if not interesting(sc, text, channel):
-                                            print "do it the new way"
-                                            msg = bots.action(datum)
-                                            print "message from %s" % user["user"]["real_name"]
-                                            if msg is not None and 0<len(msg):
-                                                sc.rtm_send_message(channel, msg)
-                        elif datum["type"] == "team_join":
-                            print "Welcome %s." % (datum["user"])
-            except KeyboardInterrupt:
-                break
-            except:
-                traceback.print_exc()
-                #print sys.exc_info()[0]
+                    sc = SlackClient(stringFromFiles())
+                    sc.rtm_connect()
+                except:
+                    #issue with API or Network, throttle the attempt
+                    traceback.print_exc()
+                    print "slow things down: %d" % limit
+                    sleepUp()
+                if data is None:
+                    sleepUp()
+                    continue
+                try:
+                    schedule(sc, gen)
+                    for datum in data:
+                        if "type" in datum:
+                            #i = False
+                            user = None
+                            if "user" in datum:
+                                user = sc.api_call("users.info", user=datum["user"])
+                            if datum["type"] == "message":
+                                if "text" in datum:
+                                    text = datum["text"]
+                                    if text is not None:
+                                        if "channel" in datum:
+                                            channel = datum["channel"]
+                                            #list = ["D14JN5VNE", sandbox.id]
+                                            #if channel in list:
+                                            if not interesting(sc, text, channel):
+                                                print "do it the new way"
+                                                msg = bots.action(datum)
+                                                print "message from %s" % user["user"]["real_name"]
+                                                if msg is not None and 0<len(msg):
+                                                    sc.rtm_send_message(channel, msg)
+                            elif datum["type"] == "team_join":
+                                print "Welcome %s." % (datum["user"])
+                except KeyboardInterrupt:
+                    break
+                except:
+                    traceback.print_exc()
+                    #print sys.exc_info()[0]
             
-            try:
-                if data is not None and 0<len(data):
-                    print data
-                now = datetime.datetime.now()
-                if 5<=now.weekday():
-                    #weekends
-                    sleepDown(10*60)
-                elif 5<now.hour and now.hour<20:
-                    #work hours
-                    sleepDown()
-                elif now.hour<5:
-                    #weekday, off hours
-                    dif = (5*60*60) - (now.hour*60 + now.minute)*60 + now.second
-                    sleepDown(dif)
-                elif 18<now.hour-5:
-                    print "shutting down as it is now after %d" % now.hour
-                    running = False
-            except:
-                traceback.print_exc()
-                sleepUp()
-    else:
-        print "Connection Failed, invalid token?"
+                try:
+                    if data is not None and 0<len(data):
+                        print data
+                    now = datetime.datetime.now()
+                    if 5<=now.weekday():
+                        #weekends
+                        sleepDown(10*60)
+                    elif 5<now.hour and now.hour<20:
+                        #work hours
+                        sleepDown()
+                    elif now.hour<5:
+                        #weekday, off hours
+                        dif = (5*60*60) - (now.hour*60 + now.minute)*60 + now.second
+                        sleepDown(dif)
+                    #elif 18<now.hour-5:
+                    #    print "shutting down as it is now after %d" % now.hour
+                    #    running = False
+                except:
+                    traceback.print_exc()
+                    sleepUp()
+        else:
+            print "Connection Failed, invalid token?"
+        print "run loop done, reconect"
+        sleepUp()
 
 if __name__ == "__main__": main()
